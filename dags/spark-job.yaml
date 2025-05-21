@@ -1,0 +1,33 @@
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: scala-spark-job
+spec:
+  type: Scala
+  mode: cluster
+  image: your-dockerhub-user/scala-spark-app:latest
+  imagePullPolicy: Always
+  mainClass: org.example.Main
+  mainApplicationFile: "local:///opt/spark/app/app.jar"
+  sparkVersion: "3.3.0"
+  restartPolicy:
+    type: Never
+  driver:
+    cores: 1
+    memory: 512m
+    serviceAccount: spark
+  executor:
+    cores: 1
+    instances: 2
+    memory: 512m
+  deps:
+    jars:
+      - local:///opt/spark/jars/dependency.jar
+  sparkConf:
+    "spark.eventLog.enabled": "true"
+    "spark.eventLog.dir": "s3a://airflow-logs/spark-events"
+    "spark.hadoop.fs.s3a.endpoint": "http://minio.default.svc.cluster.local:9000"
+    "spark.hadoop.fs.s3a.access.key": "minioadmin"
+    "spark.hadoop.fs.s3a.secret.key": "minioadmin"
+    "spark.hadoop.fs.s3a.path.style.access": "true"
+    "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem"
