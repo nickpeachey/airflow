@@ -20,6 +20,8 @@ spec:
     cores: 1
     instances: 2
     memory: 512m
+    labels:
+      version: 3.1.1
   deps:
     jars:
       - local:///opt/spark/jars/dependency.jar
