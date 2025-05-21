@@ -14,4 +14,5 @@ with DAG(
         namespace="default",
         application_file="spark-job.yaml",
         kubernetes_conn_id="kubernetes_default",
+        in_cluster=True
     )
