@@ -16,6 +16,8 @@ spec:
     cores: 1
     memory: 512m
     serviceAccount: spark
+    labels:
+      version: 3.1.1
   executor:
     cores: 1
     instances: 2
