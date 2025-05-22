@@ -26,7 +26,7 @@ spec:
       version: 3.5.5
   sparkConf:
     "spark.eventLog.enabled": "true"
-    "spark.eventLog.dir": "s3a://airflow-logs/spark-events"
+    "spark.eventLog.dir": "s3a://spark-events"
     "spark.hadoop.fs.s3a.endpoint": "http://minio.minio.svc.cluster.local:9000"
     "spark.hadoop.fs.s3a.access.key": "eF8UaaYZ9xhPJha6scs8"
     "spark.hadoop.fs.s3a.secret.key": "fVW9DFwL3V05pDXnsjeVk3S7NANKFrxf"
