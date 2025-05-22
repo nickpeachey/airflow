@@ -2,7 +2,7 @@ executor: KubernetesExecutor
 dags:
   gitSync:
     enabled: true
-    repo: https://github.com/YOUR_USERNAME/YOUR_REPO.git
+    repo: https://github.com/nickpeachey/airflow
     branch: main
     subPath: dags
     syncInterval: 60
@@ -17,14 +17,19 @@ logs:
   persistence:
     enabled: false
 webserver:
+  enabled: true
   service:
     type: NodePort
     nodePort: 30080
+  defaultUser:
+    enabled: true
+    username: admin
+    password: admin
 env:
   - name: AWS_ACCESS_KEY_ID
-    value: minioadmin
+    value: l7W6DhYLEpP44Vd6ym06
   - name: AWS_SECRET_ACCESS_KEY
-    value: minioadmin
+    value: PB6E6Qsl84cXm7ZSjSxxTpR3LoFVFJpZVZXU3fTl
   - name: AIRFLOW__KUBERNETES__DELETE_WORKER_PODS
     value: "True"
   - name: AIRFLOW__KUBERNETES__NAMESPACE
