@@ -13,7 +13,7 @@ with DAG(
     submit = SparkKubernetesOperator(
         task_id="submit_spark_job",
         namespace="default",
-        application_file="spark-job.yaml",
+        application_file="spark-minio.yaml",
         kubernetes_conn_id="kubernetes_default",
         in_cluster=True
 )
