@@ -5,7 +5,7 @@ metadata:
 spec:
   type: Scala
   mode: cluster
-  image: nickpeachey/sparkminiosaver:0.0.1
+  image: nickpeachey/sparkminiosaver:0.0.2
   imagePullPolicy: Always
   mainClass: org.example.Main
   mainApplicationFile: "local:///opt/spark/app/spark-minio-saver.jar"
