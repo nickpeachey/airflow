@@ -7,7 +7,7 @@ spec:
   mode: cluster
   image: nickpeachey/sparkminiosaver:0.0.2
   imagePullPolicy: Always
-  mainClass: org.cawooka.MainExecutor
+  mainClass: com.cawooka.MainExecutor
   mainApplicationFile: "local:///opt/spark/app/spark-minio-saver.jar"
   sparkVersion: "3.5.5"
   restartPolicy:
