@@ -17,7 +17,6 @@ with DAG(
         namespace="default",
         do_xcom_push=True,
         # --- Crucial for waiting for job completion ---
-        wait_for_completion=True,
         # If your Airflow is running inside the same Kubernetes cluster as Spark
         # in_cluster=True,
         # --- End of crucial settings ---
