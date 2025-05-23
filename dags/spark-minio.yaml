@@ -1,15 +1,16 @@
 apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
 metadata:
-  name: scala-spark-job
+  name: scala-spark-job-debug
 spec:
   type: Scala
-  mode: client
-  image: nickpeachey/sparkminiosaver:0.0.7
+  mode: cluster
+  image: nickpeachey/sparkminiosaver:3.0.7
   imagePullPolicy: Always
-  mainClass: com.cawooka.MainExecutor
-  mainApplicationFile: "local:///opt/spark/jars/spark-minio-saver.jar"
-  sparkVersion: "3.5.5"
+  mainClass: "com.cawooka.MainExecutor"
+  mainApplicationFile: "local:///opt/spark/jars/spark-debug-app.jar"
+
+  sparkVersion: "3.5.5" 
   restartPolicy:
     type: Never
   driver:
@@ -20,15 +21,22 @@ spec:
       version: 3.5.5
   executor:
     cores: 1
-    instances: 2
+    instances: 1
     memory: 512m
     labels:
       version: 3.5.5
   sparkConf:
     "spark.eventLog.enabled": "true"
+
     "spark.eventLog.dir": "s3a://spark-events"
     "spark.hadoop.fs.s3a.endpoint": "http://minio.minio.svc.cluster.local:9000"
     "spark.hadoop.fs.s3a.access.key": "eF8UaaYZ9xhPJha6scs8"
     "spark.hadoop.fs.s3a.secret.key": "fVW9DFwL3V05pDXnsjeVk3S7NANKFrxf"
     "spark.hadoop.fs.s3a.path.style.access": "true"
     "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem"
+    spark.kubernetes.submission.waitAppCompletion: "false"
+    spark.kubernetes.file.upload.path: "s3a://spark-temp-uploads"
+    spark.driver.extraClassPath: "/opt/spark/jars/spark-debug-app.jar:/opt/spark/jars/hadoop-aws-3.3.6.jar:/opt/spark/jars/aws-java-sdk-bundle-1.11.1026.jar:/opt/spark/jars/hadoop-common-3.3.6.jar"
+    spark.executor.extraClassPath: "/opt/spark/jars/spark-debug-app.jar:/opt/spark/jars/hadoop-aws-3.3.6.jar:/opt/spark/jars/aws-java-sdk-bundle-1.11.1026.jar:/opt/spark/jars/hadoop-common-3.3.6.jar"
+    # UPDATE JAR VERSIONS IN SPARK.JARS HERE (now 3.3.6):
+    spark.jars: "local:///opt/spark/jars/spark-debug-app.jar,local:///opt/spark/jars/hadoop-aws-3.3.6.jar,local:///opt/spark/jars/aws-java-sdk-bundle-1.11.1026.jar,local:///opt/spark/jars/hadoop-common-3.3.6.jar"
