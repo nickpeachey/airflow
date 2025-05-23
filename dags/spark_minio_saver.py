@@ -1,7 +1,7 @@
 from datetime import datetime
-
 from airflow import DAG
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
+from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
 
 with DAG(
     dag_id="spark_minio_saver",
@@ -10,14 +10,26 @@ with DAG(
     catchup=False,
 ) as dag:
     submit_spark_job = SparkKubernetesOperator(
-        do_xcom_push=False,
+        # Do NOT set do_xcom_push=True
+        do_xcom_push=False,  # Or remove the line entirely
         task_id="submit_scala_job_minio",
         namespace="default",
         application_file="spark-minio.yaml",
         kubernetes_conn_id="kubernetes_default",
-        in_cluster=True
-        # --- Crucial for waiting for job completion ---
-        # If your Airflow is running inside the same Kubernetes cluster as Spark
-        # in_cluster=True,
-        # --- End of crucial settings ---
+        in_cluster=True,
     )
+
+    wait_for_spark_job = SparkKubernetesSensor(
+        task_id="wait_for_spark_job",
+        namespace="default",
+        application_name="{{ task_instance.xcom_pull(task_ids='submit_scala_job_minio', key='application_name') }}",  # Get the app name from the operator
+        kubernetes_conn_id="kubernetes_default",
+        in_cluster=True,
+        poke_interval=10,  # Check every 10 seconds
+        timeout=1200,  # Wait for up to 1 hour
+    )
+
+    # Example: A downstream task that depends on the Spark job's completion
+    # downstream_task = ...
+
+    submit_spark_job >> wait_for_spark_job  # >> downstream_task
