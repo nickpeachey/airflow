@@ -24,7 +24,6 @@ with DAG(
         namespace="default",
         application_name="{{ task_instance.xcom_pull(task_ids='submit_scala_job_minio', key='application_name') }}",  # Get the app name from the operator
         kubernetes_conn_id="kubernetes_default",
-        in_cluster=True,
         poke_interval=10,  # Check every 10 seconds
         timeout=1200,  # Wait for up to 1 hour
     )
