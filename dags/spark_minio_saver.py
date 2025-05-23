@@ -11,7 +11,7 @@ with DAG(
 ) as dag:
     submit_spark_job = SparkKubernetesOperator(
         # Do NOT set do_xcom_push=True
-        do_xcom_push=False,  # Or remove the line entirely
+        do_xcom_push=True,  # Or remove the line entirely
         task_id="submit_scala_job_minio",
         namespace="default",
         application_file="spark-minio.yaml",
