@@ -5,7 +5,7 @@ metadata:
 spec:
   type: Scala
   mode: cluster
-  image: nickpeachey/sparkminiosaver:3.0.17
+  image: nickpeachey/sparkminiosaver:3.0.19
   imagePullPolicy: Always
   mainClass: "com.cawooka.MainExecutor"
   mainApplicationFile: "local:///opt/spark/jars/spark-debug-app.jar"
