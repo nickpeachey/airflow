@@ -4,7 +4,7 @@ metadata:
   name: scala-spark-job
 spec:
   type: Scala
-  mode: cluster
+  mode: client
   image: nickpeachey/sparkminiosaver:0.0.4
   imagePullPolicy: Always
   mainClass: com.cawooka.MainExecutor
