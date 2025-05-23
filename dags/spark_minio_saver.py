@@ -10,12 +10,12 @@ with DAG(
     catchup=False,
 ) as dag:
     submit_spark_job = SparkKubernetesOperator(
-        task_id="submit_spark_job",
-        application_file="local:///opt/spark/app/spark-minio-saver.jar",
-        main_class="com.cawooka.MainExecutor",  # Ensure this is the correct fully qualified name
-        kubernetes_conn_id="kubernetes_default",
-        namespace="default",
         do_xcom_push=True,
+        task_id="submit_scala_job_minio",
+        namespace="default",
+        application_file="spark-minio.yaml",
+        kubernetes_conn_id="kubernetes_default",
+        in_cluster=True
         # --- Crucial for waiting for job completion ---
         # If your Airflow is running inside the same Kubernetes cluster as Spark
         # in_cluster=True,
