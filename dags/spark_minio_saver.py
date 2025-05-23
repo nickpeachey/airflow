@@ -22,10 +22,11 @@ with DAG(
     wait_for_spark_job = SparkKubernetesSensor(
         task_id="wait_for_spark_job",
         namespace="default",
-        application_name="{{ task_instance.xcom_pull(task_ids='submit_scala_job_minio', key='application_name') }}",  # Get the app name from the operator
+        # *** FIX HERE: Provide the exact Spark Application name directly ***
+        application_name="scala-spark-job-debug",
         kubernetes_conn_id="kubernetes_default",
-        poke_interval=10,  # Check every 10 seconds
-        timeout=1200,  # Wait for up to 1 hour
+        poke_interval=10,
+        timeout=3600,
     )
 
     # Example: A downstream task that depends on the Spark job's completion
