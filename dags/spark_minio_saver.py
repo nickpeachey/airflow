@@ -10,7 +10,7 @@ with DAG(
     catchup=False,
 ) as dag:
     submit_spark_job = SparkKubernetesOperator(
-        do_xcom_push=True,
+        do_xcom_push=False,
         task_id="submit_scala_job_minio",
         namespace="default",
         application_file="spark-minio.yaml",
