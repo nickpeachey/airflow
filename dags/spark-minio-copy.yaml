@@ -25,9 +25,3 @@ spec:
     memory: 512m
     labels:
       version: 3.5.5
-  sparkConf:
-    spark.driver.extraClassPath: "/opt/spark/jars/spark-debug-app.jar:/opt/spark/jars/hadoop-aws-3.3.6.jar:/opt/spark/jars/aws-java-sdk-bundle-1.11.1026.jar:/opt/spark/jars/hadoop-common-3.3.6.jar:/opt/spark/jars/hadoop-mapreduce-client-core-3.3.6.jar:/opt/spark/jars/hadoop-hdfs-client-3.3.6.jar:/opt/spark/jars/jackson-annotations-2.12.7.jar:/opt/spark/jars/jackson-core-2.12.7.jar:/opt/spark/jars/jackson-databind-2.12.7.jar:/opt/spark/jars/jackson-module-scala_2.12-2.12.7.jar"
-    spark.executor.extraClassPath:
-      "/opt/spark/jars/spark-debug-app.jar:/opt/spark/jars/hadoop-aws-3.3.6.jar:/opt/spark/jars/aws-java-sdk-bundle-1.11.1026.jar:/opt/spark/jars/hadoop-common-3.3.6.jar:/opt/spark/jars/hadoop-mapreduce-client-core-3.3.6.jar:/opt/spark/jars/hadoop-hdfs-client-3.3.6.jar:/opt/spark/jars/jackson-annotations-2.12.7.jar:/opt/spark/jars/jackson-core-2.12.7.jar:/opt/spark/jars/jackson-databind-2.12.7.jar:/opt/spark/jars/jackson-module-scala_2.12-2.12.7.jar"
-      # All JARs that Spark needs to know about for distribution
-    spark.jars: "local:///opt/spark/jars/spark-debug-app.jar,local:///opt/spark/jars/hadoop-aws-3.3.6.jar,local:///opt/spark/jars/aws-java-sdk-bundle-1.11.1026.jar,local:///opt/spark/jars/hadoop-common-3.3.6.jar,local:///opt/spark/jars/hadoop-mapreduce-client-core-3.3.6.jar,local:///opt/spark/jars/hadoop-hdfs-client-3.3.6.jar,local:///opt/spark/jars/jackson-annotations-2.12.7.jar,local:///opt/spark/jars/jackson-core-2.12.7.jar,local:///opt/spark/jars/jackson-databind-2.12.7.jar,local:///opt/spark/jars/jackson-module-scala_2.12-2.12.7.jar"
