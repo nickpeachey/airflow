@@ -19,17 +19,7 @@ with DAG(
         in_cluster=True,
     )
 
-    wait_for_spark_job = SparkKubernetesSensor(
-        task_id="wait_for_spark_job",
-        namespace="default",
-        # *** FIX HERE: Provide the exact Spark Application name directly ***
-        application_name="submit_scala_job_minio-copy",
-        kubernetes_conn_id="kubernetes_default",
-        poke_interval=10,
-        timeout=3600,
-    )
-
     # Example: A downstream task that depends on the Spark job's completion
     # downstream_task = ...
 
-    submit_spark_job >> wait_for_spark_job  # >> downstream_task
+    submit_spark_job  # >> downstream_task
