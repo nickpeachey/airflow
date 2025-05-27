@@ -23,7 +23,7 @@ with DAG(
         task_id="wait_for_spark_job",
         namespace="default",
         # *** FIX HERE: Provide the exact Spark Application name directly ***
-        application_name="scala-spark-job-debug",
+        application_name="scala-spark-job-debu-copy",
         kubernetes_conn_id="kubernetes_default",
         poke_interval=10,
         timeout=3600,
