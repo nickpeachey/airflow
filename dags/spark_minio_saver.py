@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.hooks.base import BaseHook
@@ -107,7 +107,7 @@ def generate_spark_minio_config(**kwargs):
 with DAG(
     dag_id="spark_minio_saver",
     start_date=datetime(2023, 1, 1),
-    schedule_interval=None,
+    schedule_interval = timedelta(minutes=3),
     catchup=False,
     tags=['spark', 'kubernetes', 'minio', 'connections'],
 ) as dag:
