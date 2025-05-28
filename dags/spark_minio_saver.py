@@ -141,7 +141,7 @@ with DAG(
     monitor_spark_job = SparkKubernetesSensor(
         task_id="monitor_spark_job",
         namespace="default",
-        application_name="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_name') }}",
+        application_name="scala-spark-job",
         kubernetes_conn_id="kubernetes_default",
         attach_log=True,
         poke_interval=30,  # Check every 30 seconds
