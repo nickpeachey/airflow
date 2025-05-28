@@ -73,7 +73,7 @@ def generate_spark_minio_config(**kwargs):
                     "spark.hadoop.fs.s3a.path.style.access": "true", # Essential for MinIO
                     "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem",
                     "spark.hadoop.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
-                    "spark.kubernetes.driver.pod.retention.policy": "Never",
+                    "spark.kubernetes.driver.pod.retention.policy": "Always", # Retain driver pod logs
                 },
                 "driver": {
                     "cores": 1,
