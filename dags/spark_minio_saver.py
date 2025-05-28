@@ -2,7 +2,7 @@ from datetime import datetime
 from airflow import DAG
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
-
+from airflow.hooks.base import BaseHook
 with DAG(
     dag_id="spark_minio_saver",
     start_date=datetime(2023, 1, 1),
@@ -28,6 +28,13 @@ with DAG(
         poke_interval=10,
         timeout=3600,
     )
+
+    def get_application_details(**kwargs):
+        conn = BaseHook.get_connection('minio_conn')
+        print(f"Connection details: {conn.host}, {conn.login}, {conn.password}")
+        # This function can be used to retrieve details about the Spark application
+        # if needed, but it is not required for the DAG to function.
+        pass
 
     # Example: A downstream task that depends on the Spark job's completion
     # downstream_task = ...
