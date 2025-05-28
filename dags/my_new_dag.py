@@ -11,14 +11,14 @@ from airflow.utils.task_group import TaskGroup
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
+spark_app_name = None
 def generate_spark_minio_config(**kwargs):
     """
     Retrieves Minio connection details from Airflow and generates a
     SparkApplication Kubernetes resource dictionary.
     """
     # Initialize variables to None, in case of early exit or error
-    spark_app_name = None
+
     spark_application_config = None
 
     try:
@@ -149,7 +149,7 @@ with TaskGroup("spark_minio_tasks",tooltip="My New Dag" ,dag=dag) as spark_minio
     t_wait_for_spark_job = SparkKubernetesSensor(
         task_id="wait_for_spark_job",
         namespace="default",
-        application_name="{{ task_instance.xcom_pull(task_ids='spark_minio_tasks.generate_spark_minio_config_task', key='spark_app_name') }}",
+        application_name="{{ spark_app_name }}",
         kubernetes_conn_id="kubernetes_default",
         poke_interval=10,
         timeout=3600,
