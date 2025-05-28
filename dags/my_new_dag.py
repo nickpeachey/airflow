@@ -135,7 +135,8 @@ with TaskGroup("spark_minio_tasks",tooltip="My New Dag" ,dag=dag) as spark_minio
 
     t_generate_spark_minio_config = PythonOperator(
         task_id=task_id,
-        python_callable=lambda: logger.info("Generating Spark MinIO config..."),
+        python_callable=generate_spark_minio_config,
+        provide_context=True,
         dag=dag,
     )
     t_submit_spark_job = SparkKubernetesOperator(
