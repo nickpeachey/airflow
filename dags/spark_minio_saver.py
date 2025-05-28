@@ -67,7 +67,7 @@ def generate_spark_minio_config(**kwargs):
                 "sparkConf": {
                     # Configure Spark to use S3A for MinIO
                     # Use the dynamically retrieved endpoint here
-                    "spark.hadoop.fs.s3a.endpoint": minio_endpoint,
+                    "spark.hadoop.fs.s3a.endpoint": "http://minio.minio.svc.cluster.local:9000",
                     "spark.hadoop.fs.s3a.access.key": minio_access_key,
                     "spark.hadoop.fs.s3a.secret.key": minio_secret_key,
                     "spark.hadoop.fs.s3a.path.style.access": "true", # Essential for MinIO
