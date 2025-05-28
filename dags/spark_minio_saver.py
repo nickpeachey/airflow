@@ -134,5 +134,15 @@ with DAG(
         # in the provided application_file dictionary.
     )
 
+    monitor_spark_job = SparkKubernetesSensor(
+        task_id="monitor_spark_job",
+        namespace="default",
+        application_name="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_name') }}",
+        kubernetes_conn_id="kubernetes_default",
+        attach_log=True,
+        poke_interval=30,  # Check every 30 seconds
+        timeout=60 * 60,   # Timeout after 1 hour
+    )
+
     # Define the task dependencies
-    generate_spark_config_task >> submit_spark_job
+    generate_spark_config_task >> submit_spark_job >> monitor_spark_job
