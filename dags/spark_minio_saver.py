@@ -21,7 +21,7 @@ from jinja2 import Template # Still useful if you prefer templating YAML strings
 
 def generate_spark_minio_config(**kwargs):
     """
-    Retrieves MinIO connection details from Airflow and generates a
+    Retrieves Minio connection details from Airflow and generates a
     SparkApplication Kubernetes resource dictionary.
     """
     try:
@@ -80,6 +80,7 @@ def generate_spark_minio_config(**kwargs):
                     "cores": 1,
                     "memory": "1g",
                     "serviceAccount": "spark", # IMPORTANT: Your Kubernetes service account for Spark
+                    "labels": {}, # ADDED: Empty labels dictionary to prevent KeyError
                 },
                 "executor": {
                     "cores": 1,
