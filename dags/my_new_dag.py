@@ -1,11 +1,16 @@
+import logging
 import os
-from datetime import datetime
-
+from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.hooks.base import BaseHook
 from airflow.operators.python import PythonOperator
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
+from airflow.operators.empty import EmptyOperator
+from airflow.utils.task_group import TaskGroup
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 def generate_spark_minio_config(**kwargs):
     """
@@ -107,43 +112,46 @@ def generate_spark_minio_config(**kwargs):
             kwargs['ti'].xcom_push(key='spark_app_name', value=spark_app_name)
 
 
-# Your DAG definition
-with DAG(
-    dag_id="spark_minio_saver",
-    start_date=datetime(2023, 1, 1),
-    schedule_interval=None,
+
+dag = DAG(
+    'my_new_dag',
+    default_args={
+        'owner': 'airflow',
+        'depends_on_past': False,
+        'start_date': datetime(2023, 10, 1),
+        'retries': 1,
+        'retry_delay': timedelta(minutes=5),
+    },
+    description='A new DAG for Spark on Kubernetes with MinIO integration',
+    schedule_interval='@daily',
     catchup=False,
-    tags=['spark', 'kubernetes', 'minio', 'connections'],
-) as dag:
-    # Task to generate the Spark Application configuration with MinIO details
-    generate_spark_config_task = PythonOperator(
-        task_id='generate_spark_minio_config_task',
-        python_callable=generate_spark_minio_config,
-        provide_context=True, # Required to access task instance (ti) for XComs and ts_nodash
-    )
+    tags=['example', 'spark', 'minio'],
+)
 
-    # Task to submit the Spark job to Kubernetes
-    submit_spark_job = SparkKubernetesOperator(
-        task_id="submit_scala_job_minio",
-        namespace="default", # Must match the namespace in spark_application_config metadata
-        # Pass the dynamically generated SparkApplication dictionary from XCom
-        application_file="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_config') }}",
-        kubernetes_conn_id="kubernetes_default", # Ensure this connection exists and is valid
-        in_cluster=True, # Set to True if Airflow is running inside the Kubernetes cluster
-        # The SparkKubernetesOperator will automatically set the application_name based on the metadata.name
-        # in the provided application_file dictionary.
-    )
+start = EmptyOperator(task_id='start', dag=dag)
 
-    # Task to wait for the Spark job to complete
-    wait_for_spark_job = SparkKubernetesSensor(
+with TaskGroup("spark_minio_tasks",tooltip="My New Dag" ,dag=dag) as spark_minio_tasks:
+    task_id = "generate_spark_minio_config_task"
+
+    t_generate_spark_minio_config = PythonOperator(
+        task_id=task_id,
+        python_callable=lambda: logger.info("Generating Spark MinIO config..."),
+        dag=dag,
+    )
+    t_submit_spark_job = SparkKubernetesOperator(
+        task_id="submit_spark_job",
+        namespace="default",
+        application_file="{{ task_instance.xcom_pull(task_ids='spark_minio_tasks.generate_spark_minio_config_task', key='spark_app_config') }}",
+        kubernetes_conn_id="kubernetes_default",
+        in_cluster=True,
+    )
+    t_wait_for_spark_job = SparkKubernetesSensor(
         task_id="wait_for_spark_job",
-        namespace="default", # Must match the namespace where the SparkApplication is created
-        # Pull the dynamically generated Spark Application name from XCom
-        application_name="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_name') }}",
-        kubernetes_conn_id="kubernetes_default", # Ensure this connection exists and is valid
-        poke_interval=10, # How often to check for status
-        timeout=3600, # Max time to wait for the Spark job (in seconds)
+        namespace="default",
+        application_name="{{ task_instance.xcom_pull(task_ids='spark_minio_tasks.generate_spark_minio_config_task', key='spark_app_name') }}",
+        kubernetes_conn_id="kubernetes_default",
+        poke_interval=10,
+        timeout=3600,
     )
-
-    # Define the task dependencies
-    generate_spark_config_task >> submit_spark_job >> wait_for_spark_job
+    t_generate_spark_minio_config >> t_submit_spark_job >> t_wait_for_spark_job
+start >> spark_minio_tasks
