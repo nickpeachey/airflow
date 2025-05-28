@@ -55,7 +55,7 @@ def generate_spark_minio_config(**kwargs):
             "kind": "SparkApplication",
             "metadata": {
                 "name": spark_app_name,
-                "namespace": "default", # Or your desired Kubernetes namespace for Spark jobs
+                "namespace": "airflow", # Or your desired Kubernetes namespace for Spark jobs
             },
             "spec": {
                 "type": "Scala",
@@ -125,9 +125,9 @@ with DAG(
     # Task to submit the Spark job to Kubernetes
     submit_spark_job = SparkKubernetesOperator(
         task_id="submit_scala_job_minio",
-        namespace="default", # Must match the namespace in spark_application_config metadata
+        namespace="airflow", # Must match the namespace in spark_application_config metadata
         # Pass the dynamically generated SparkApplication dictionary from XCom
-        application_file="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_config') }}",
+        application="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_config') }}",
         kubernetes_conn_id="kubernetes_default", # Ensure this connection exists and is valid
         in_cluster=True, # Set to True if Airflow is running inside the Kubernetes cluster
         # The SparkKubernetesOperator will automatically set the application_name based on the metadata.name
@@ -137,7 +137,7 @@ with DAG(
     # Task to wait for the Spark job to complete
     wait_for_spark_job = SparkKubernetesSensor(
         task_id="wait_for_spark_job",
-        namespace="default", # Must match the namespace where the SparkApplication is created
+        namespace="airflow", # Must match the namespace where the SparkApplication is created
         # Pull the dynamically generated Spark Application name from XCom
         application_name="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_name') }}",
         kubernetes_conn_id="kubernetes_default", # Ensure this connection exists and is valid
