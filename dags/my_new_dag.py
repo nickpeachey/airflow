@@ -151,7 +151,7 @@ with TaskGroup("spark_minio_tasks",tooltip="My New Dag" ,dag=dag) as spark_minio
         namespace="default",
         application_name="{{ spark_app_name }}",
         kubernetes_conn_id="kubernetes_default",
-        poke_interval=10,
+        poke_interval=5,
         timeout=3600,
     )
     t_generate_spark_minio_config >> t_submit_spark_job >> t_wait_for_spark_job
