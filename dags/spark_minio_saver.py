@@ -32,6 +32,7 @@ with DAG(
         task_id='get_application_details',
         python_callable=get_application_details,
         provide_context=True,
+        kubernetes_conn_id="kubernetes_default",
     )
 
     wait_for_spark_job = SparkKubernetesSensor(
