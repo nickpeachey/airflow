@@ -5,11 +5,6 @@ from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKube
 from airflow.hooks.base import BaseHook
 from airflow.operators.python import PythonOperator
 
-def get_application_details(**kwargs):
-    conn = BaseHook.get_connection('minio_conn')
-    print(f"Connection details: {conn.host}, {conn.login}, {conn.password}")
-        # This function can be used to retrieve details about the Spark application
-
 
 with DAG(
     dag_id="spark_minio_saver",
@@ -28,12 +23,6 @@ with DAG(
         in_cluster=True,
     )
 
-    get_application_details_dag = PythonOperator(
-        task_id='get_application_details',
-        python_callable=get_application_details,
-        provide_context=True,
-        namespace="default",
-    )
 
     wait_for_spark_job = SparkKubernetesSensor(
         task_id="wait_for_spark_job",
@@ -53,4 +42,4 @@ with DAG(
     # Example: A downstream task that depends on the Spark job's completion
     # downstream_task = ...
 
-    submit_spark_job >> wait_for_spark_job >> get_application_details_dag  # >> downstream_task
+    submit_spark_job >> wait_for_spark_job # >> downstream_task
