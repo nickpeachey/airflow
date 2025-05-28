@@ -1,5 +1,6 @@
 import os
-from datetime import datetime
+from airflow.sensors.time_delta import TimeDeltaSensor
+from datetime import timedelta
 
 from airflow import DAG
 from airflow.hooks.base import BaseHook
@@ -146,5 +147,10 @@ with DAG(
         timeout=60 * 60,   # Timeout after 1 hour
     )
 
+    wait_for_crd = TimeDeltaSensor(
+        task_id="wait_for_crd",
+        delta=timedelta(seconds=15),  # Try 15 seconds; increase if needed
+    )
+
     # Define the task dependencies
-    generate_spark_config_task >> submit_spark_job >> monitor_spark_job
+    generate_spark_config_task >> submit_spark_job >> wait_for_crd >> monitor_spark_job
