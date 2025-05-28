@@ -47,7 +47,7 @@ def generate_spark_minio_config(**kwargs):
         # Ensure ts_nodash is available, provide a fallback if not (e.g., during DAG parsing)
         # This makes the spark_app_name more robust
         execution_timestamp = kwargs.get('ts_nodash', datetime.now().strftime("%Y%m%dT%H%M%S"))
-        spark_app_name = f"scala-spark-job-{execution_timestamp}" # Dynamic name for the Spark Application
+        spark_app_name = "scala-spark-job" # Dynamic name for the Spark Application
 
         # 2. Define the SparkApplication Kubernetes resource as a Python dictionary
         # This dictionary will be passed directly to the SparkKubernetesOperator
