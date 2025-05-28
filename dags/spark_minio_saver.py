@@ -1,6 +1,6 @@
 import os
 from airflow.sensors.time_delta import TimeDeltaSensor
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.hooks.base import BaseHook
