@@ -63,10 +63,10 @@ def generate_spark_minio_config(**kwargs):
             "spec": {
                 "type": "Scala",
                 "mode": "cluster",
-                "image": "apache/spark:3.3.0", # IMPORTANT: Replace with your actual Spark image (e.g., with Hadoop S3A support)
+                "image": "nickpeachey/sparkminiosaver:3.0.19", # IMPORTANT: Replace with your actual Spark image (e.g., with Hadoop S3A support)
                 "imagePullPolicy": "Always",
-                "mainClass": "com.example.SparkMinioSaver", # IMPORTANT: Replace with your Scala main class
-                "mainApplicationFile": "local:///opt/spark/jars/your-spark-app.jar", # IMPORTANT: Path to your JAR inside the Spark image
+                "mainClass": "com.cawooka.MainExecutor", # IMPORTANT: Replace with your Scala main class
+                "mainApplicationFile": "local:///opt/spark/jars/spark-debug-app.jar", # IMPORTANT: Path to your JAR inside the Spark image
                 "sparkConf": {
                     # Configure Spark to use S3A for MinIO
                     "spark.hadoop.fs.s3a.endpoint": minio_endpoint,
