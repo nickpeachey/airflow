@@ -148,7 +148,7 @@ with TaskGroup("spark_minio_tasks",tooltip="My New Dag" ,dag=dag) as spark_minio
     )
     t_wait_for_spark_job = SparkKubernetesSensor(
         task_id="wait_for_spark_job",
-        namespace="default",
+        namespace="airflow",
         application_name="{{ task_instance.xcom_pull(task_ids='submit_spark_job', key='return_value') }}",
         kubernetes_conn_id="kubernetes_default",
         poke_interval=5,
