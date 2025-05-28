@@ -134,11 +134,11 @@ with DAG(
         task_id="wait_for_spark_job",
         namespace="default",
         # Pull the dynamically generated Spark Application name from XCom
-        application_name="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_name') }}",
+        application_name="{{ task_instance.xcom_pull(task_ids='generate_spark_config_task', key='spark_app_name') }}",
         kubernetes_conn_id="kubernetes_default",
         poke_interval=10,
         timeout=3600,
     )
 
     # Define the task dependencies
-    generate_spark_config_task >> submit_spark_job
+    generate_spark_config_task >> submit_spark_job >> wait_for_spark_job
