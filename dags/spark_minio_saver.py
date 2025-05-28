@@ -141,4 +141,4 @@ with DAG(
     )
 
     # Define the task dependencies
-    generate_spark_config_task >> submit_spark_job >> wait_for_spark_job
+    generate_spark_config_task >> submit_spark_job
