@@ -30,7 +30,7 @@ with DAG(
 
     get_application_details_dag = PythonOperator(
         task_id='get_application_details',
-        python_callable=get_application_detaiggfls,
+        python_callable=get_application_details,
         provide_context=True,
     )
 
