@@ -47,7 +47,7 @@ def generate_spark_minio_config(**kwargs):
         # Ensure ts_nodash is available, provide a fallback if not (e.g., during DAG parsing)
         # This makes the spark_app_name more robust
         execution_timestamp = kwargs.get('ts_nodash', datetime.now().strftime("%Y%m%dT%H%M%S"))
-        spark_app_name = "scala-spark-job" # Dynamic name for the Spark Application
+        spark_app_name = f"scala-spark-job-{execution_timestamp}" # Dynamic name for the Spark Application
 
         # 2. Define the SparkApplication Kubernetes resource as a Python dictionary
         # This dictionary will be passed directly to the SparkKubernetesOperator
@@ -74,8 +74,6 @@ def generate_spark_minio_config(**kwargs):
                     "spark.hadoop.fs.s3a.path.style.access": "true", # Essential for MinIO
                     "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem",
                     "spark.hadoop.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
-                    "spark.kubernetes.driver.pod.retention.policy": "Always",
-                    "spark.kubernetes.executor.pod.retention.policy": "Always",
                 },
                 "driver": {
                     "cores": 1,
@@ -132,26 +130,10 @@ with DAG(
         # Pass the dynamically generated SparkApplication dictionary from XCom
         application_file="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_config') }}",
         kubernetes_conn_id="kubernetes_default", # Ensure this connection exists and is valid
-        in_cluster=True,
-        delete_on_termination=False, # Set to True if Airflow is running inside the Kubernetes cluster
+        in_cluster=True, # Set to True if Airflow is running inside the Kubernetes cluster
         # The SparkKubernetesOperator will automatically set the application_name based on the metadata.name
         # in the provided application_file dictionary.
     )
 
-    monitor_spark_job = SparkKubernetesSensor(
-        task_id="monitor_spark_job",
-        namespace="default",
-        application_name="scala-spark-job",
-        kubernetes_conn_id="kubernetes_default",
-        attach_log=True,
-        poke_interval=30,  # Check every 30 seconds
-        timeout=60 * 60,   # Timeout after 1 hour
-    )
-
-    wait_for_crd = TimeDeltaSensor(
-        task_id="wait_for_crd",
-        delta=timedelta(seconds=15),  # Try 15 seconds; increase if needed
-    )
-
     # Define the task dependencies
-    generate_spark_config_task >> submit_spark_job >> wait_for_crd >> monitor_spark_job
+    generate_spark_config_task >> submit_spark_job
