@@ -139,7 +139,7 @@ with DAG(
         task_id="wait_for_spark_job",
         namespace="default", # Must match the namespace where the SparkApplication is created
         # Pull the dynamically generated Spark Application name from XCom
-        application_name="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_name') }}",
+        application_name="{{ task_instance.xcom_pull(task_ids='submit_scala_job_minio', key='spark_app_name') }}",
         kubernetes_conn_id="kubernetes_default", # Ensure this connection exists and is valid
         poke_interval=10, # How often to check for status
         timeout=3600, # Max time to wait for the Spark job (in seconds)
