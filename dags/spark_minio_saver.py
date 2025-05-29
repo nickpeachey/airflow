@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.hooks.base import BaseHook
 from airflow.operators.python import PythonOperator
+from airflow.operators.bash import BashOperator
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
 
@@ -148,6 +149,11 @@ with DAG(
         timeout=600,  # 10 minutes timeout
     )
 
+    spark_job_finished = BashOperator(
+        task_id="spark_job_finished",
+        bash_command="echo 'Spark job completed successfully!'",
+    )
+
 
     # Define the task dependencies
-    generate_spark_config_task >> submit_spark_job >> monitor_spark_job
+    generate_spark_config_task >> submit_spark_job >> monitor_spark_job >> spark_job_finished
