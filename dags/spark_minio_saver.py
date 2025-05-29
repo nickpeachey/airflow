@@ -138,14 +138,16 @@ with DAG(
       # Task to monitor the Spark job completion
     # Task to monitor the Spark job completion
     # Task to monitor the Spark job completion
+    # Task to monitor the Spark job completion
     monitor_spark_job = SparkKubernetesSensor(
         task_id="monitor_scala_job_minio",
-        namespace="airflow",
-        application_name="{{ task_instance.xcom_pull(task_ids='submit_scala_job_minio', key='return_value') }}",
+        namespace="default",
+        application_name="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_name') }}",
         kubernetes_conn_id="kubernetes_default",
         poke_interval=30,
         timeout=600,  # 10 minutes timeout
     )
+
 
     # Define the task dependencies
     generate_spark_config_task >> submit_spark_job >> monitor_spark_job
