@@ -121,7 +121,6 @@ with DAG(
     generate_spark_config_task = PythonOperator(
         task_id='generate_spark_minio_config_task',
         python_callable=generate_spark_minio_config,
-        provide_context=True, # Required to access task instance (ti) for XComs and ts_nodash
     )
 
     # Task to submit the Spark job to Kubernetes
