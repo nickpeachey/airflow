@@ -12,12 +12,11 @@ def print_minio_files(**kwargs):
     minio_secret_key = conn.password
     bucket_name = 'my-minio-bucket'
 
-    if not (minio_endpoint.startswith('http://') or minio_endpoint.startswith('https://')):
-        minio_endpoint = f'http://{minio_endpoint}:9000'
+
 
     s3 = boto3.client(
         's3',
-        endpoint_url=minio_endpoint,
+        endpoint_url=http://minio.minio.svc.cluster.local:9000,
         aws_access_key_id=minio_access_key,
         aws_secret_access_key=minio_secret_key,
         region_name='us-east-1',
