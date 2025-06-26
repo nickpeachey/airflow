@@ -123,7 +123,7 @@ dag = DAG(
         'retry_delay': timedelta(minutes=5),
     },
     description='A new DAG for Spark on Kubernetes with MinIO integration',
-    schedule_interval='@daily',
+    schedule='@daily',
     catchup=False,
     tags=['example', 'spark', 'minio'],
 )
