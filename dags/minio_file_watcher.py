@@ -9,7 +9,7 @@ from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor
 
 dag = DAG(
     'minio_file_watcher',
-    default_args=('start_date': datetime(2023, 10, 1), 'retries': 1),
+    default_args={'start_date': days_ago(1)},
     description='Prints files in a MinIO bucket',
     schedule_interval='@once',
     catchup=False,
