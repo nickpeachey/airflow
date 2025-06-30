@@ -1,47 +1,11 @@
 import os
-import boto3
+
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.hooks.base import BaseHook
 from airflow.operators.python import PythonOperator
+from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor
 
-def print_minio_files(**kwargs):
-    conn = BaseHook.get_connection('minio_conn')
-    minio_endpoint = conn.host
-    minio_access_key = conn.login
-    minio_secret_key = conn.password
-    bucket_name = 'my-minio-bucket'
-
-
-
-    s3 = boto3.client(
-        's3',
-        endpoint_url=http://minio.minio.svc.cluster.local:9000,
-        aws_access_key_id=minio_access_key,
-        aws_secret_access_key=minio_secret_key,
-        region_name='us-east-1',
-        config=boto3.session.Config(signature_version='s3v4'),
-    )
-
-    response = s3.list_objects_v2(Bucket=bucket_name)
-    file_list = []
-    if 'Contents' in response:
-        for obj in response['Contents']:
-            file_list.append(obj['Key'])
-    print("Current files in MinIO bucket:")
-    if file_list:
-        for f in file_list:
-            print(f" - {f}")
-    else:
-        print("(Bucket is empty)")
-
-default_args = {
-    'owner': 'airflow',
-    'depends_on_past': False,
-    'start_date': datetime(2023, 1, 1),
-    'retries': 1,
-    'retry_delay': timedelta(minutes=5),
-}
 
 dag = DAG(
     'minio_file_watcher',
@@ -52,9 +16,20 @@ dag = DAG(
     tags=['minio', 'file-watcher'],
 )
 
-print_files = PythonOperator(
-    task_id='print_minio_files',
-    python_callable=print_minio_files,
-    provide_context=True,
+wait_for_file = S3KeySensor(
+    task_id='wait_for_file',
+    bucket_name='your-minio-bucket',  # Replace with your MinIO bucket name # Replace with the path to the file you want to watch
+    aws_conn_id='minio_conn',  # Ensure you have a connection named 'minio_conn' configured in Airflow
+    wildcard_match=True,
+    timeout=600,  # Wait for up to 10 minutes
+    poke_interval=30,  # Check every 30 seconds
     dag=dag,
-) 
+)
+
+print_success_message = PythonOperator(
+    task_id='print_success_message',
+    python_callable=lambda: print("File detected in MinIO bucket!"),
+    dag=dag,
+)
+
+wait_for_file >> print_success_message
