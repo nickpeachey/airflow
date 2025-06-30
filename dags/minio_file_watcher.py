@@ -14,7 +14,8 @@ def delete_minio_file(bucket_name, bucket_key, aws_conn_id):
     Deletes a file from the specified MinIO bucket.
     """
     s3_hook = S3Hook(aws_conn_id=aws_conn_id)
-    s3_hook.delete_objects(bucket=bucket_name, keys=bucket_key)
+    # Use delete_key for single file deletion
+    s3_hook.delete_key(key=bucket_key, bucket_name=bucket_name)
     print(f"File '{bucket_key}' deleted from bucket '{bucket_name}'.")
 
 
