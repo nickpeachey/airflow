@@ -2,6 +2,7 @@ import os
 
 from datetime import datetime, timedelta
 from airflow import DAG
+from airflow.utils.dates import days_ago
 from airflow.hooks.base import BaseHook
 from airflow.operators.python import PythonOperator
 from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor
