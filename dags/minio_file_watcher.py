@@ -66,7 +66,7 @@ dag = DAG(
     'minio_file_watcher',
     default_args={'start_date': days_ago(1)},
     description='Prints files in a MinIO bucket',
-    schedule_interval='@once',
+    schedule_interval='@2mins',
     catchup=False,
     tags=['minio', 'file-watcher'],
 )
