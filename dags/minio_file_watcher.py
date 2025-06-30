@@ -6,6 +6,16 @@ from airflow.utils.dates import days_ago
 from airflow.hooks.base import BaseHook
 from airflow.operators.python import PythonOperator
 from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook # Import S3Hook
+
+
+def delete_minio_file(bucket_name, bucket_key, aws_conn_id):
+    """
+    Deletes a file from the specified MinIO bucket.
+    """
+    s3_hook = S3Hook(aws_conn_id=aws_conn_id)
+    s3_hook.delete_objects(bucket=bucket_name, keys=bucket_key)
+    print(f"File '{bucket_key}' deleted from bucket '{bucket_name}'.")
 
 
 dag = DAG(
@@ -34,4 +44,16 @@ print_success_message = PythonOperator(
     dag=dag,
 )
 
-wait_for_file >> print_success_message
+delete_file_from_minio = PythonOperator(
+    task_id='delete_file_from_minio',
+    python_callable=delete_minio_file,
+    op_kwargs={
+        'bucket_name': 'my-minio-bucket',
+        'bucket_key': 'sample.csv',
+        'aws_conn_id': 'minio_conn'
+    },
+    dag=dag,
+)
+
+
+wait_for_file >> print_success_message >> delete_file_from_minio
