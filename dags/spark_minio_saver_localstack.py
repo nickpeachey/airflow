@@ -37,7 +37,7 @@ def generate_spark_minio_config(**kwargs):
         print(conn)
 
         # Ensure the MinIO endpoint is a full URL (http/https + host + port)
-        minio_endpoint = "https://localhost.localstack.cloud:4566"
+        minio_endpoint = "http://localhost:4566"
 
         print(f"Retrieved MinIO connection details for {conn.conn_id}:")
         print(f"  Endpoint: {minio_endpoint}")
@@ -68,7 +68,7 @@ def generate_spark_minio_config(**kwargs):
                 "sparkConf": {
                     # Configure Spark to use S3A for MinIO
                     # Use the dynamically retrieved endpoint here
-                    "spark.hadoop.fs.s3a.endpoint": "https://localhost.localstack.cloud:4566",
+                    "spark.hadoop.fs.s3a.endpoint": "http://localhost:4566",
                     "spark.hadoop.fs.s3a.access.key": minio_access_key,
                     "spark.hadoop.fs.s3a.secret.key": minio_secret_key,
                     "spark.hadoop.fs.s3a.path.style.access": "true", # Essential for MinIO
