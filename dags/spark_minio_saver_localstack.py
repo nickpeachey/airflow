@@ -29,7 +29,6 @@ def generate_spark_minio_config(**kwargs):
         # Password: your_minio_secret_key
         # Extra: {"endpoint_url": "http://minio-service.minio.svc.cluster.local:9000", "region_name": "us-east-1", "s3_url_style": "path"}
         conn = BaseHook.get_connection('minio_conn')
-
         if conn.extra:
             extras = json.loads(conn.extra)
         
@@ -49,11 +48,6 @@ def generate_spark_minio_config(**kwargs):
         print(conn)
 
         # Ensure the MinIO endpoint is a full URL (http/https + host + port)
-        minio_endpoint = "http://10.96.20.224:4566"
-
-        print(f"Retrieved MinIO connection details for {conn.conn_id}:")
-        print(f"  Endpoint: {minio_endpoint}")
-        print(f"  Access Key: {minio_access_key[:4]}...{minio_access_key[-4:]}") # Print partial for security
         # print(f"  Secret Key: {minio_secret_key}") # Avoid printing sensitive info in logs
 
         # Ensure ts_nodash is available, provide a fallback if not (e.g., during DAG parsing)
@@ -80,7 +74,7 @@ def generate_spark_minio_config(**kwargs):
                 "sparkConf": {
                     # Configure Spark to use S3A for MinIO
                     # Use the dynamically retrieved endpoint here
-                    "spark.hadoop.fs.s3a.endpoint": "http://10.96.20.224:4566",
+                    "spark.hadoop.fs.s3a.endpoint": endpoint_url,
                     "spark.hadoop.fs.s3a.access.key": minio_access_key,
                     "spark.hadoop.fs.s3a.secret.key": minio_secret_key,
                     "spark.hadoop.fs.s3a.path.style.access": "true", # Essential for MinIO
