@@ -37,7 +37,7 @@ def generate_spark_minio_config(**kwargs):
             endpoint_url = extras.get('endpoint_url')
         
         if endpoint_url:
-            print(f"MinIO Endpoint URL: {endpoint_url}")
+            print(f"MinIO Endpoint URL blahb: {endpoint_url}")
         else:
             print("'endpoint_url' not found in the 'extras' of 'minio_conn'.")
 
