@@ -30,6 +30,18 @@ def generate_spark_minio_config(**kwargs):
         # Extra: {"endpoint_url": "http://minio-service.minio.svc.cluster.local:9000", "region_name": "us-east-1", "s3_url_style": "path"}
         conn = BaseHook.get_connection('minio_conn')
 
+        if conn.extra:
+            extras = json.loads(conn.extra)
+        
+        # Now you can access the 'endpoint_url'
+            endpoint_url = extras.get('endpoint_url')
+        
+        if endpoint_url:
+            print(f"MinIO Endpoint URL: {endpoint_url}")
+        else:
+            print("'endpoint_url' not found in the 'extras' of 'minio_conn'.")
+
+
         minio_host = conn.host
         minio_access_key = conn.login
         minio_secret_key = conn.password
