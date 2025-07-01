@@ -33,7 +33,7 @@ def generate_spark_minio_config(**kwargs):
         minio_host = conn.host
         minio_access_key = conn.login
         minio_secret_key = conn.password
-
+        print(f"Retrieved MinIO connection details for {conn.conn_id}:")
         print(conn)
 
         # Ensure the MinIO endpoint is a full URL (http/https + host + port)
