@@ -100,6 +100,7 @@ wait_for_file = S3KeySensor(
 print_success_message = PythonOperator(
     task_id='print_success_message',
     python_callable=lambda: print("File detected in MinIO bucket!"),
+    outlets=[my_dataset],  # This task produces/updates the dataset
     dag=dag,
 )
 
