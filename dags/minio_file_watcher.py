@@ -90,8 +90,10 @@ wait_for_file = S3KeySensor(
     bucket_key='sample.csv', # Replace with your MinIO bucket name # Replace with the path to the file you want to watch
     aws_conn_id='minio_conn',  # Ensure you have a connection named 'minio_conn' configured in Airflow
     wildcard_match=True,
-    timeout=600,  # Wait for up to 10 minutes
-    poke_interval=30,  # Check every 30 seconds
+    timeout=3600,  # Wait for up to 1 hour (increased from 10 minutes)
+    poke_interval=60,  # Check every minute (reduced frequency to be less aggressive)
+    soft_fail=True,  # Don't fail the entire DAG run if sensor times out
+    mode='reschedule',  # Use reschedule mode to free up worker slots between checks
     dag=dag,
 )
 
