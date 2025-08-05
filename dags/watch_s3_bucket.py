@@ -23,7 +23,7 @@ with DAG(
         task_id='watch_for_file',
         bucket_key='*',  # Watch for any file in the bucket
         bucket_name='my-minio-bucket',
-        aws_conn_id='aws_default',
+        aws_conn_id='minio_conn',
         poke_interval=60,
         timeout=60 * 60,
         mode='poke',
