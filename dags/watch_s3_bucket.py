@@ -21,7 +21,7 @@ with DAG(
 
     watch_for_file = S3KeySensor(
         task_id='watch_for_file',
-        bucket_key='s3://my-minio-bucket/*',  # Use wildcard for multiple files
+        bucket_key='my-minio-bucket/*',  # Use wildcard for multiple files
         bucket_name='s3://my-minio-bucket',
         aws_conn_id='aws_default',
         poke_interval=60,
