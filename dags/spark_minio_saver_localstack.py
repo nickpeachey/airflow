@@ -135,8 +135,7 @@ with DAG(
         # Pass the dynamically generated SparkApplication dictionary from XCom
         application_file="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_config') }}",
         kubernetes_conn_id="kubernetes_default", # Ensure this connection exists and is valid
-        in_cluster=True, # Set to True if Airflow is running inside the Kubernetes cluster
-        do_xcom_push=True, # Push the SparkApplication config to XCom for monitoring
+        in_cluster=True, # Set to True if Airflow is running inside the Kubernetes cluster # Push the SparkApplication config to XCom for monitoring
         # The SparkKubernetesOperator will automatically set the application_name based on the metadata.name
         # in the provided application_file dictionary.
     )
