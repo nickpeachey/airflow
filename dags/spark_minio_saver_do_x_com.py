@@ -1,20 +1,16 @@
 import json
-import os
 from datetime import datetime
 from airflow import DAG
 from airflow.hooks.base import BaseHook
 from airflow.operators.python import PythonOperator
 from airflow.operators.empty import EmptyOperator
 from airflow.utils.task_group import TaskGroup
+from airflow.models.xcom_arg import XComArg
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
 
 
 def generate_spark_minio_config(**kwargs):
-    """
-    Retrieves Minio connection details from Airflow and generates a
-    SparkApplication spec file path for SparkKubernetesOperator.
-    """
     conn = BaseHook.get_connection('minio_conn')
     extras = json.loads(conn.extra) if conn.extra else {}
     endpoint_url = extras.get('endpoint_url')
@@ -67,13 +63,8 @@ def generate_spark_minio_config(**kwargs):
         },
     }
 
-    # Save to file
-    file_path = f"/tmp/spark_app_{execution_timestamp}.json"
-    with open(file_path, "w") as f:
-        json.dump(spark_application_config, f)
-
     ti = kwargs['ti']
-    ti.xcom_push(key='spark_app_file_xcom', value=file_path)
+    ti.xcom_push(key='spark_app_config_xcom', value=spark_application_config)
     ti.xcom_push(key='spark_app_name_xcom', value=spark_app_name)
 
 
@@ -98,14 +89,14 @@ with DAG(
             task_id="submit_scala_job_minio_spark_minio_saver_do_x_com",
             do_xcom_push=True,
             namespace="default",
-            application_file="{{ ti.xcom_pull(task_ids='LocalStackJob.generate_spark_minio_config_task_spark_minio_saver_do_x_com', key='spark_app_file_xcom') }}",
+            template_body=XComArg(generate_spark_config_task, key='spark_app_config_xcom'),
             kubernetes_conn_id="kubernetes_default",
             in_cluster=True,
         )
 
         monitor_job = SparkKubernetesSensor(
             task_id="monitor_spark_job_minio_spark_minio_saver_do_x_com",
-            application_name="{{ ti.xcom_pull(task_ids='LocalStackJob.generate_spark_minio_config_task_spark_minio_saver_do_x_com', key='spark_app_name_xcom') }}",
+            application_name=XComArg(generate_spark_config_task, key='spark_app_name_xcom'),
             namespace="default",
             kubernetes_conn_id="kubernetes_default",
             do_xcom_push=True,
