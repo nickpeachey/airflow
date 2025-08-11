@@ -22,7 +22,7 @@ with DAG(
     watch_for_file = S3KeySensor(
         task_id='watch_for_file',
         bucket_key='*',  # Watch for any file in the bucket
-        bucket_name='my-minio-bucket',
+        bucket_name='data-lake',
         aws_conn_id='minio_conn',
         poke_interval=60,
         timeout=60 * 60,
