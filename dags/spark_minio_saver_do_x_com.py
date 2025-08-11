@@ -137,6 +137,7 @@ with TaskGroup("LocalStackJob", tooltip="Localstack Job") as localstack_job:
         # Task to submit the Spark job to Kubernetes
         submit_spark_job = SparkKubernetesOperator(
             task_id="submit_scala_job_minio_spark_minio_saver_do_x_com",
+            do_xcom_push=True, # Push the SparkApplication config to XCom for monitoring
             namespace="default", # Must match the namespace in spark_application_config metadata
             # Pass the dynamically generated SparkApplication dictionary from XCom
             application_file="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_config') }}",
