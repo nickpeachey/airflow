@@ -152,6 +152,7 @@ with DAG(
                 application_name="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_name') }}",
                 namespace="default", # Must match the namespace in spark_application_config metadata
                 kubernetes_conn_id="kubernetes_default", # Ensure this connection exists and is valid
-                in_cluster=True, # Set to True if Airflow is running inside the Kubernetes cluster
+                do_xcom_push=True,
+             # Set to True if Airflow is running inside the Kubernetes cluster
             )
             generate_spark_config_task >> submit_spark_job >> monitor_job
