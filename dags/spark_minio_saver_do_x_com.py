@@ -127,36 +127,31 @@ with DAG(
     
     start = EmptyOperator(task_id='start', dag=dag)
     # Task to generate the Spark Application configuration with MinIO details
-with TaskGroup("LocalStackJob", tooltip="Localstack Job") as localstack_job:
+    with TaskGroup("LocalStackJob", tooltip="Localstack Job") as localstack_job:
 
-        generate_spark_config_task = PythonOperator(
-        task_id='generate_spark_minio_config_task_spark_minio_saver_do_x_com',
-        python_callable=generate_spark_minio_config,
-        )
+            generate_spark_config_task = PythonOperator(
+            task_id='generate_spark_minio_config_task_spark_minio_saver_do_x_com',
+            python_callable=generate_spark_minio_config,
+            )
 
-        # Task to submit the Spark job to Kubernetes
-        submit_spark_job = SparkKubernetesOperator(
-            task_id="submit_scala_job_minio_spark_minio_saver_do_x_com",
-            do_xcom_push=True, # Push the SparkApplication config to XCom for monitoring
-            namespace="default", # Must match the namespace in spark_application_config metadata
-            # Pass the dynamically generated SparkApplication dictionary from XCom
-            application_file="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_config') }}",
-            kubernetes_conn_id="kubernetes_default", # Ensure this connection exists and is valid
-            in_cluster=True, # Set to True if Airflow is running inside the Kubernetes cluster # Push the SparkApplication config to XCom for monitoring
-            # The SparkKubernetesOperator will automatically set the application_name based on the metadata.name
-            # in the provided application_file dictionary.
-        )
+            # Task to submit the Spark job to Kubernetes
+            submit_spark_job = SparkKubernetesOperator(
+                task_id="submit_scala_job_minio_spark_minio_saver_do_x_com",
+                do_xcom_push=True, # Push the SparkApplication config to XCom for monitoring
+                namespace="default", # Must match the namespace in spark_application_config metadata
+                # Pass the dynamically generated SparkApplication dictionary from XCom
+                application_file="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_config') }}",
+                kubernetes_conn_id="kubernetes_default", # Ensure this connection exists and is valid
+                in_cluster=True, # Set to True if Airflow is running inside the Kubernetes cluster # Push the SparkApplication config to XCom for monitoring
+                # The SparkKubernetesOperator will automatically set the application_name based on the metadata.name
+                # in the provided application_file dictionary.
+            )
 
-        monitor_job = SparkKubernetesSensor(
-            task_id="monitor_spark_job_minio_spark_minio_saver_do_x_com",
-            application_name="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_name') }}",
-            namespace="default", # Must match the namespace in spark_application_config metadata
-            kubernetes_conn_id="kubernetes_default", # Ensure this connection exists and is valid
-            in_cluster=True, # Set to True if Airflow is running inside the Kubernetes cluster
-        )
-      # Task to monitor the Spark job completion
-    # Task to monitor the Spark job completion
-    # Task to monitor the Spark job completion
-    # Task to monitor the Spark job completion
-        # Define the task dependencies
-        generate_spark_config_task >> submit_spark_job >> monitor_job
+            monitor_job = SparkKubernetesSensor(
+                task_id="monitor_spark_job_minio_spark_minio_saver_do_x_com",
+                application_name="{{ task_instance.xcom_pull(task_ids='generate_spark_minio_config_task', key='spark_app_name') }}",
+                namespace="default", # Must match the namespace in spark_application_config metadata
+                kubernetes_conn_id="kubernetes_default", # Ensure this connection exists and is valid
+                in_cluster=True, # Set to True if Airflow is running inside the Kubernetes cluster
+            )
+            generate_spark_config_task >> submit_spark_job >> monitor_job
